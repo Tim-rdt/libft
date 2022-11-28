@@ -6,7 +6,7 @@
 /*   By: troudot <troudot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/06 01:08:45 by troudot           #+#    #+#             */
-/*   Updated: 2022/11/14 05:53:24 by troudot          ###   ########.fr       */
+/*   Updated: 2022/11/22 09:32:19 by troudot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ void	*ft_memchr(const void *s, int c, size_t n)
 	while (n--)
 	{
 		if (*str == (unsigned char)c)
-			return ((unsigned char *)str);
+			return (str);
 		str++;
 	}
 	return (NULL);
