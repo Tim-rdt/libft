@@ -6,7 +6,7 @@
 #    By: troudot <troudot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/03 03:09:47 by troudot           #+#    #+#              #
-#    Updated: 2022/11/17 09:39:51 by troudot          ###   ########.fr        #
+#    Updated: 2022/12/02 06:31:00 by troudot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,28 +28,53 @@ SRCS	=   ft_isalpha.c	ft_isdigit.c	ft_isalnum.c	ft_isascii.c	ft_isprint.c	\
 SRCS_BONUS = ft_lstnew.c	ft_lstadd_front.c	ft_lstsize.c	ft_lstlast.c	ft_lstiter.c\
 			 ft_lstadd_back.c	ft_lstdelone.c	ft_lstclear.c	ft_lstmap.c
 
-
-OBJS		= ${SRCS:.c=.o}
-OBJS_BONUS	= ${SRCS_BONUS:.c=.o}
 NAME		= libft.a
+NAME_PRINT = LIBFT
+PREFIX_NAME = \033[1m\033[38;5;240m[\033[0m\033[38;5;250m$(NAME_PRINT)\033[1m\033[38;5;240m] \033[38;5;105m~\033[0m
 
-.c.o:
-	gcc -Wall -Wextra -Werror -c $< -o ${<:.c=.o} -I includes
+CC =	gcc $(FLAG)
+FLAG =	 -Wall -Wextra -Werror
 
-${NAME}: ${OBJS}
-	ar rc ${NAME} ${OBJS}
-	ranlib ${NAME}
+OBJS =	$(SRCS:%.c=%.o)
+OBJS_BONUS	= ${SRCS_BONUS:.c=.o}
 
-bonus:	$(OBJS_BONUS)
-	ar rcs $(NAME) $(OBJS_BONUS)
-	ranlib ${NAME}
+H	= first
 
-all: ${NAME}
+all: 	$(NAME)
 
-clean:
-	rm -f ${OBJS}
+titre:
+ifeq (${H} , first)
+	@echo "\033[38;5;105m\n\n██╗     ██╗██████╗ ███████╗████████╗\033"
+	@echo "\033[38;5;105m██║     ██║██╔══██╗██╔════╝╚══██╔══╝\033"
+	@echo "\033[38;5;105m██║     ██║██████╔╝█████╗     ██║   \033"
+	@echo "\033[38;5;105m██║     ██║██╔══██╗██╔══╝     ██║   \033"
+	@echo "\033[38;5;105m███████╗██║██████╔╝██║        ██║   \033"
+	@echo "\033[38;5;105m╚══════╝╚═╝╚═════╝ ╚═╝        ╚═╝   \n\n\033"
+	@H=second
+endif
 
-fclean:
-	rm -f ${NAME} ${OBJS_BONUS} ${OBJS}
+$(OBJS): %.o: %.c
+		@echo "$(PREFIX_NAME) Compiling \033[38;5;105m$<\033[m"
+		@$(CC) $< -o $@ -c
+
+$(NAME): titre $(SRCS) $(OBJS) bonus
+		@ar rcs $(NAME) $(OBJS)
+		@echo "\n$(PREFIX_NAME) \033[38;5;084mFinish !\033[m"
+
+$(OBJS_BONUS): %.o: %.c
+		@echo "$(PREFIX_NAME) Compiling \033[38;5;105m$<\033[m\033[38;5;166m [Bonus]\033"
+		@$(CC) $< -o $@ -c
+
+bonus: $(OBJS_BONUS)
+		@ar rcs $(NAME) $(OBJS_BONUS)
+
+clean: titre
+		@rm -f $(OBJS) $(OBJS_BONUS)
+		@echo "$(PREFIX_NAME)\033[38;5;084m Cleaning\n\033[m"
+
+fclean:	clean
+		@rm -f $(NAME) $(OBJS_BONUS)
 
 re: fclean all
+
+.PHONY: all clean fclean re
