@@ -6,7 +6,7 @@
 #    By: troudot <troudot@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/11/03 03:09:47 by troudot           #+#    #+#              #
-#    Updated: 2022/12/02 06:31:00 by troudot          ###   ########.fr        #
+#    Updated: 2022/12/16 07:16:16 by troudot          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,16 +25,44 @@ SRCS	=   ft_isalpha.c	ft_isdigit.c	ft_isalnum.c	ft_isascii.c	ft_isprint.c	\
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ BONUS FILES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
 SRCS_BONUS = ft_lstnew.c	ft_lstadd_front.c	ft_lstsize.c	ft_lstlast.c	ft_lstiter.c\
 			 ft_lstadd_back.c	ft_lstdelone.c	ft_lstclear.c	ft_lstmap.c
 
-NAME		= libft.a
-NAME_PRINT = LIBFT
-PREFIX_NAME = \033[1m\033[38;5;240m[\033[0m\033[38;5;250m$(NAME_PRINT)\033[1m\033[38;5;240m] \033[38;5;105m~\033[0m
+# Count how much files
+NBR = 1
+NBR_FILES= $(shell find ft*.c | wc -l | tr -d " ")
+
+#Center header
+SIZE_TERM= $(shell tput cols)
+SPACE_HEADER= $(shell echo $$((($(SIZE_TERM)-36)/2)))
+PRINT_SPACE= $(shell printf "%$(SPACE_HEADER)s" | tr " " " ")
+
+#Center Cleaning
+HEADER_CLEANING= $(shell echo $$((($(SIZE_TERM)-8)/2)))
+PRINT_CLEANING= $(shell printf "%$(HEADER_CLEANING)s" | tr " " " ")
+
+#RGB colors
+COLOR = 29
+MAX_COLOR = 37
+
+#Re-Print multiple line
+REMOVE_BACK=$(shell tput cuu1)
+REMOVE_LINE=$(shell tput el)
+
+#Clear screen
+CLEAR_SCREEN=$(shell tput clear)
+
+NAME	= libft.a
+PREFIX_NAME = $(NAME_PRINT)
+NEG = $(shell echo $$(($(NBR_FILES)-$(NBR))))
+
+TRUEE=$(shell printf "%$(NBR)s" | tr " " "\#")
+FALSE=$(shell printf "%$(NEG)s" | tr " " "~")
+PROGRES_BAR=$(TRUEE)$(FALSE)]	[$(PREFIX_NAME)
 
 CC =	gcc $(FLAG)
 FLAG =	 -Wall -Wextra -Werror
-
 OBJS =	$(SRCS:%.c=%.o)
 OBJS_BONUS	= ${SRCS_BONUS:.c=.o}
 
@@ -44,33 +72,39 @@ all: 	$(NAME)
 
 titre:
 ifeq (${H} , first)
-	@echo "\033[38;5;105m\n\n██╗     ██╗██████╗ ███████╗████████╗\033"
-	@echo "\033[38;5;105m██║     ██║██╔══██╗██╔════╝╚══██╔══╝\033"
-	@echo "\033[38;5;105m██║     ██║██████╔╝█████╗     ██║   \033"
-	@echo "\033[38;5;105m██║     ██║██╔══██╗██╔══╝     ██║   \033"
-	@echo "\033[38;5;105m███████╗██║██████╔╝██║        ██║   \033"
-	@echo "\033[38;5;105m╚══════╝╚═╝╚═════╝ ╚═╝        ╚═╝   \n\n\033"
+	@echo "\033[38;5;105m\n\n$(PRINT_SPACE)██╗     ██╗██████╗ ███████╗████████╗\033"
+	@echo "\033[38;5;105m$(PRINT_SPACE)██║     ██║██╔══██╗██╔════╝╚══██╔══╝\033"
+	@echo "\033[38;5;105m$(PRINT_SPACE)██║     ██║██████╔╝█████╗     ██║   \033"
+	@echo "\033[38;5;105m$(PRINT_SPACE)██║     ██║██╔══██╗██╔══╝     ██║   \033"
+	@echo "\033[38;5;105m$(PRINT_SPACE)███████╗██║██████╔╝██║        ██║   \033"
+	@echo "\033[38;5;105m$(PRINT_SPACE)╚══════╝╚═╝╚═════╝ ╚═╝        ╚═╝   \n\n\033"
 	@H=second
 endif
 
-$(OBJS): %.o: %.c
-		@echo "$(PREFIX_NAME) Compiling \033[38;5;105m$<\033[m"
-		@$(CC) $< -o $@ -c
+
+%.o: %.c
+	@printf "\r[$(PROGRES_BAR)%%]"
+	@$(CC) $< -o $@ -c
+	$(eval NBR=$(shell echo $$(($(NBR)+1))))
+	$(eval NAME_PRINT=$(shell echo $$((${NBR}*100/$(NBR_FILES)))))
+	$(eval COLOR=$(shell echo $$(($(COLOR)+$(shell test $(COLOR) -gt 37; echo $$?)-8*$(shell test $(COLOR) -lt 37; echo $$?)))))
 
 $(NAME): titre $(SRCS) $(OBJS) bonus
 		@ar rcs $(NAME) $(OBJS)
-		@echo "\n$(PREFIX_NAME) \033[38;5;084mFinish !\033[m"
+		@printf "\n$(PRINT_CLEANING)Finist !\n"
 
 $(OBJS_BONUS): %.o: %.c
-		@echo "$(PREFIX_NAME) Compiling \033[38;5;105m$<\033[m\033[38;5;166m [Bonus]\033"
+		@printf "\r[$(PROGRES_BAR)%%]"
 		@$(CC) $< -o $@ -c
+		$(eval NBR=$(shell echo $$(($(NBR)+1))))
+		$(eval NAME_PRINT=$(shell echo $$((${NBR}*100/($(NBR_FILES))))))
 
 bonus: $(OBJS_BONUS)
 		@ar rcs $(NAME) $(OBJS_BONUS)
 
 clean: titre
 		@rm -f $(OBJS) $(OBJS_BONUS)
-		@echo "$(PREFIX_NAME)\033[38;5;084m Cleaning\n\033[m"
+		@printf "\033\n$(PRINT_CLEANING)Cleaning !\n"
 
 fclean:	clean
 		@rm -f $(NAME) $(OBJS_BONUS)

@@ -6,11 +6,13 @@
 /*   By: troudot <troudot@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/12 03:38:39 by troudot           #+#    #+#             */
-/*   Updated: 2022/11/13 03:52:31 by troudot          ###   ########.fr       */
+/*   Updated: 2022/12/10 09:42:21 by troudot          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 static int	ft_len(long n)
 {
